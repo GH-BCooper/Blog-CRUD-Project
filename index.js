@@ -1,10 +1,12 @@
+// Module Imports
 import express from "express";
 import bodyParser from "body-parser";
 
+// Express App Configuration
 const app = express();
 const port = 4000;
 
-// In-memory data store
+// In-Memory Database
 let posts = [
   {
     id: 1,
@@ -14,6 +16,7 @@ let posts = [
     author: "Alex Thompson",
     date: "2023-08-01T10:00:00Z",
   },
+
   {
     id: 2,
     title: "The Impact of Artificial Intelligence on Modern Businesses",
@@ -22,6 +25,7 @@ let posts = [
     author: "Mia Williams",
     date: "2023-08-05T14:30:00Z",
   },
+
   {
     id: 3,
     title: "Sustainable Living: Tips for an Eco-Friendly Lifestyle",
@@ -34,69 +38,91 @@ let posts = [
 
 let lastId = 3;
 
-// Middleware
+// Middleware Configuration
 app.use(bodyParser.json());
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//Write your code here//
-
-//CHALLENGE 1: GET All posts
+// Fetch All Posts Route
 app.get("/posts", (req, res) => {
   res.json(posts);
 });
 
-//CHALLENGE 2: GET a specific post by id
+// Fetch Single Post Route
 app.get("/posts/:id", (req, res) => {
   const postId = parseInt(req.params.id);
+
   const post = posts.find((p) => p.id === postId);
-  if(post) {
+
+  if (post) {
     res.json(post);
   } else {
-    res.status(404).json({ message: "Post not found" });
+    res.status(404).json({
+      message: "Post not found",
+    });
   }
 });
 
-//CHALLENGE 3: POST a new post
+// Create New Post Route
 app.post("/posts", (req, res) => {
-  const newId = lastId += 1;
+  const newId = (lastId += 1);
+
   const newPost = {
     id: newId,
     title: req.body.title,
     content: req.body.content,
     author: req.body.author,
-    date: new Date()
+    date: new Date(),
   };
+
   lastId = newId;
+
   posts.push(newPost);
+
   res.status(201).json(newPost);
 });
 
-//CHALLENGE 4: PATCH a post when you just want to update one parameter
+// Update Existing Post Route
 app.patch("/posts/:id", (req, res) => {
   const postId = parseInt(req.params.id);
+
   const post = posts.find((p) => p.id === postId);
-  if(post) {
-    if(req.body.title) post.title = req.body.title;
-    if(req.body.content) post.content = req.body.content;
-    if(req.body.author) post.author = req.body.author;
+
+  if (post) {
+    if (req.body.title) post.title = req.body.title;
+
+    if (req.body.content) post.content = req.body.content;
+
+    if (req.body.author) post.author = req.body.author;
+
     res.json(post);
   } else {
-    res.status(404).json({ message: "Post not found" });
+    res.status(404).json({
+      message: "Post not found",
+    });
   }
 });
 
-//CHALLENGE 5: DELETE a specific post by providing the post id.
+// Delete Post Route
 app.delete("/posts/:id", (req, res) => {
   const postId = parseInt(req.params.id);
+
   const postIndex = posts.findIndex((p) => p.id === postId);
-  if(postIndex !== -1) {
+
+  if (postIndex !== -1) {
     posts.splice(postIndex, 1);
-    res.json({ message: "Post deleted successfully" });
+
+    res.json({
+      message: "Post deleted successfully",
+    });
   } else {
-    res.status(404).json({ message: "Post not found" });
+    res.status(404).json({
+      message: "Post not found",
+    });
   }
 });
 
+// Server Listener
 app.listen(port, () => {
   console.log(`API is running at http://localhost:${port}`);
 });
